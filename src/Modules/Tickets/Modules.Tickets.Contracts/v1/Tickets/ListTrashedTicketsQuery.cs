@@ -1,0 +1,8 @@
+using MIT.Framework.Shared.Persistence;
+using MIT.Modules.Tickets.Contracts.Dtos;
+using Mediator;
+
+namespace MIT.Modules.Tickets.Contracts.v1.Tickets;
+
+public sealed record ListTrashedTicketsQuery(int PageNumber = 1, int PageSize = 20)
+    : IQuery<PagedResponse<TicketDto>>;

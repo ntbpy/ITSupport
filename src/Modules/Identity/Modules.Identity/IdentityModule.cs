@@ -1,0 +1,260 @@
+﻿using Asp.Versioning;
+using MIT.Framework.Core.Context;
+using MIT.Framework.Eventing;
+using MIT.Framework.Persistence;
+using MIT.Framework.Quota;
+using MIT.Framework.Storage;
+using MIT.Framework.Storage.Local;
+using MIT.Framework.Storage.Services;
+using MIT.Framework.Web.Modules;
+using MIT.Modules.Identity.Authorization;
+using MIT.Modules.Identity.Authorization.Jwt;
+using MIT.Modules.Identity.Contracts.Services;
+using MIT.Modules.Identity.Data;
+using MIT.Modules.Identity.Domain;
+using MIT.Modules.Identity.Features.v1.Groups.AddUsersToGroup;
+using MIT.Modules.Identity.Features.v1.Groups.CreateGroup;
+using MIT.Modules.Identity.Features.v1.Groups.DeleteGroup;
+using MIT.Modules.Identity.Features.v1.Groups.GetGroupById;
+using MIT.Modules.Identity.Features.v1.Groups.GetGroupMembers;
+using MIT.Modules.Identity.Features.v1.Groups.GetGroups;
+using MIT.Modules.Identity.Features.v1.Groups.RemoveUserFromGroup;
+using MIT.Modules.Identity.Features.v1.Groups.UpdateGroup;
+using MIT.Modules.Identity.Features.v1.Impersonation.EndImpersonation;
+using MIT.Modules.Identity.Features.v1.Impersonation.GetImpersonationGrants;
+using MIT.Modules.Identity.Features.v1.Impersonation.RevokeImpersonationGrant;
+using MIT.Modules.Identity.Features.v1.Impersonation.StartImpersonation;
+using MIT.Modules.Identity.Features.v1.Permissions.GetPermissionCatalog;
+using MIT.Modules.Identity.Features.v1.Roles;
+using MIT.Modules.Identity.Features.v1.Roles.DeleteRole;
+using MIT.Modules.Identity.Features.v1.Roles.GetRoleById;
+using MIT.Modules.Identity.Features.v1.Roles.GetRoles;
+using MIT.Modules.Identity.Features.v1.Roles.GetRoleWithPermissions;
+using MIT.Modules.Identity.Features.v1.Roles.UpdateRolePermissions;
+using MIT.Modules.Identity.Features.v1.Roles.UpsertRole;
+using MIT.Modules.Identity.Features.v1.Sessions.AdminRevokeAllSessions;
+using MIT.Modules.Identity.Features.v1.Sessions.AdminRevokeSession;
+using MIT.Modules.Identity.Features.v1.Sessions.GetMySessions;
+using MIT.Modules.Identity.Features.v1.Sessions.GetTenantSessions;
+using MIT.Modules.Identity.Features.v1.Sessions.GetUserSessions;
+using MIT.Modules.Identity.Features.v1.Sessions.RevokeAllSessions;
+using MIT.Modules.Identity.Features.v1.Sessions.RevokeSession;
+using MIT.Modules.Identity.Features.v1.Tokens.RefreshToken;
+using MIT.Modules.Identity.Features.v1.Tokens.TokenGeneration;
+using MIT.Modules.Identity.Features.v1.TwoFactor.Disable;
+using MIT.Modules.Identity.Features.v1.TwoFactor.Enroll;
+using MIT.Modules.Identity.Features.v1.TwoFactor.VerifyEnroll;
+using MIT.Modules.Identity.Features.v1.Users.AssignUserRoles;
+using MIT.Modules.Identity.Features.v1.Users.ChangePassword;
+using MIT.Modules.Identity.Features.v1.Users.AdminConfirmEmail;
+using MIT.Modules.Identity.Features.v1.Users.ConfirmEmail;
+using MIT.Modules.Identity.Features.v1.Users.ResendConfirmationEmail;
+using MIT.Modules.Identity.Features.v1.Users.DeleteUser;
+using MIT.Modules.Identity.Features.v1.Users.ForgotPassword;
+using MIT.Modules.Identity.Features.v1.Users.GetUserById;
+using MIT.Modules.Identity.Features.v1.Users.GetUserGroups;
+using MIT.Modules.Identity.Features.v1.Users.GetUserPermissions;
+using MIT.Modules.Identity.Features.v1.Users.GetUserProfile;
+using MIT.Modules.Identity.Features.v1.Users.GetUserRoles;
+using MIT.Modules.Identity.Features.v1.Users.GetUsers;
+using MIT.Modules.Identity.Features.v1.Users.RegisterUser;
+using MIT.Modules.Identity.Features.v1.Users.ResetPassword;
+using MIT.Modules.Identity.Features.v1.Users.SearchUsers;
+using MIT.Modules.Identity.Features.v1.Users.SelfRegistration;
+using MIT.Modules.Identity.Features.v1.Users.SetProfileImage;
+using MIT.Modules.Identity.Features.v1.Users.ToggleUserStatus;
+using MIT.Modules.Identity.Features.v1.Users.UpdateUser;
+using MIT.Modules.Identity.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
+
+namespace MIT.Modules.Identity;
+
+public class IdentityModule : IModule
+{
+    public void ConfigureServices(IHostApplicationBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        MIT.Framework.Shared.Constants.PermissionConstants.Register(
+            MIT.Modules.Identity.Contracts.Authorization.IdentityPermissions.All);
+
+        var services = builder.Services;
+        services.AddScoped<RolePermissionSyncer>();
+        services.AddHostedService<RolePermissionSyncHostedService>();
+        services.AddSingleton<IAuthorizationMiddlewareResultHandler, PathAwareAuthorizationHandler>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<ICurrentUserService>());
+        services.AddScoped<ICurrentUserInitializer>(sp => sp.GetRequiredService<ICurrentUserService>());
+        services.AddScoped<IRequestContextService, RequestContextService>();
+        services.AddScoped<IRequestContext>(sp => sp.GetRequiredService<IRequestContextService>());
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IImpersonationGrantService, ImpersonationGrantService>();
+
+        // User services - focused single-responsibility services
+        services.AddTransient<IUserRegistrationService, UserRegistrationService>();
+        services.AddTransient<IUserProfileService, UserProfileService>();
+        services.AddTransient<IUserStatusService, UserStatusService>();
+        services.AddTransient<IUserRoleService, UserRoleService>();
+        services.AddTransient<IUserPasswordService, UserPasswordService>();
+        services.AddTransient<IUserPermissionService, UserPermissionService>();
+
+        // Facade for backward compatibility
+        services.AddTransient<IUserService, UserService>();
+
+        services.AddTransient<IRoleService, RoleService>();
+        services.AddHeroStorage(builder.Configuration);
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddHeroDbContext<IdentityDbContext>();
+        services.AddEventingCore(builder.Configuration);
+        services.AddEventingForDbContext<IdentityDbContext>();
+        services.AddIntegrationEventHandlers(typeof(IdentityModule).Assembly);
+        builder.Services.AddHealthChecks()
+            .AddDbContextCheck<IdentityDbContext>(
+                name: "db:identity",
+                failureStatus: HealthStatus.Unhealthy);
+        services.AddScoped<IDbInitializer, IdentityDbInitializer>();
+
+        // Configure password policy options
+        services.Configure<PasswordPolicyOptions>(builder.Configuration.GetSection("PasswordPolicy"));
+
+        // Tenant subscription grace window (shared "Billing" section) — used by the login expiry check.
+        services.Configure<TenantGraceOptions>(builder.Configuration.GetSection(TenantGraceOptions.SectionName));
+
+        // Register password history service
+        services.AddScoped<IPasswordHistoryService, PasswordHistoryService>();
+
+        // Register password expiry service
+        services.AddScoped<IPasswordExpiryService, PasswordExpiryService>();
+
+        // Register session service and background cleanup
+        services.AddScoped<ISessionService, SessionService>();
+        services.AddHostedService<SessionCleanupHostedService>();
+
+        // Register group role service for group-derived permissions
+        services.AddScoped<IGroupRoleService, GroupRoleService>();
+
+        // Quota gauge: reports live user count per tenant for the Users quota.
+        services.AddScoped<IQuotaGaugeProvider, UserCountQuotaGaugeProvider>();
+
+        services.AddIdentity<FshUser, FshRole>(options =>
+        {
+            options.Password.RequiredLength = IdentityModuleConstants.PasswordLength;
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = true;
+            options.User.RequireUniqueEmail = true;
+
+            // Account lockout: 5 consecutive failed logins → 15-minute lockout (applies to new users by default).
+            // IdentityService's login flow drives AccessFailedAsync / IsLockedOutAsync.
+            options.Lockout.AllowedForNewUsers = true;
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        })
+           .AddEntityFrameworkStores<IdentityDbContext>()
+           .AddDefaultTokenProviders();
+
+        //metrics
+        services.AddSingleton<IdentityMetrics>();
+
+        services.ConfigureJwtAuth();
+    }
+
+    public void MapEndpoints(IEndpointRouteBuilder endpoints)
+    {
+        ArgumentNullException.ThrowIfNull(endpoints);
+
+        var apiVersionSet = endpoints.NewApiVersionSet()
+            .HasApiVersion(new ApiVersion(1))
+            .ReportApiVersions()
+            .Build();
+
+        var group = endpoints
+            .MapGroup("api/v{version:apiVersion}/identity")
+            .WithTags("Identity")
+            .WithApiVersionSet(apiVersionSet);
+
+        // tokens
+        group.MapGenerateTokenEndpoint().AllowAnonymous().RequireRateLimiting("auth");
+        group.MapRefreshTokenEndpoint().AllowAnonymous().RequireRateLimiting("auth");
+
+        // The outbox is dispatched by the framework's OutboxDispatcherHostedService (on by default). A second dispatcher
+        // here would race the same rows (no row-level claim) → duplicate handlers + PK_InboxMessages collisions, so this module registers none.
+
+        // roles
+        group.MapGetRolesEndpoint();
+        group.MapGetRoleByIdEndpoint();
+        group.MapDeleteRoleEndpoint();
+        group.MapGetRolePermissionsEndpoint();
+        group.MapUpdateRolePermissionsEndpoint();
+        group.MapCreateOrUpdateRoleEndpoint();
+
+        // permission catalog — every permission registered with the host,
+        // filtered to the caller's tenant context (root vs admin set)
+        group.MapGetPermissionCatalogEndpoint();
+
+        // users
+        group.MapAssignUserRolesEndpoint();
+        group.MapChangePasswordEndpoint();
+        group.MapAdminConfirmEmailEndpoint();
+        group.MapResendConfirmationEmailEndpoint().RequireRateLimiting("auth");
+        group.MapConfirmEmailEndpoint().RequireRateLimiting("auth");
+        group.MapDeleteUserEndpoint();
+        group.MapGetUserByIdEndpoint();
+        group.MapGetCurrentUserPermissionsEndpoint();
+        group.MapGetMeEndpoint();
+        group.MapGetUserRolesEndpoint();
+        group.MapGetUsersListEndpoint();
+        group.MapSearchUsersEndpoint();
+        group.MapRegisterUserEndpoint();
+        group.MapForgotPasswordEndpoint().RequireRateLimiting("auth");
+        group.MapResetPasswordEndpoint().RequireRateLimiting("auth");
+        group.MapSelfRegisterUserEndpoint().RequireRateLimiting("auth");
+        group.MapToggleUserStatusEndpoint();
+        group.MapUpdateUserEndpoint();
+        group.MapSetProfileImageEndpoint();
+
+        // sessions - user endpoints
+        group.MapGetMySessionsEndpoint();
+        group.MapRevokeSessionEndpoint();
+        group.MapRevokeAllSessionsEndpoint();
+
+        // sessions - admin endpoints
+        group.MapGetTenantSessionsEndpoint();
+        group.MapGetUserSessionsEndpoint();
+        group.MapAdminRevokeSessionEndpoint();
+        group.MapAdminRevokeAllSessionsEndpoint();
+
+        // groups
+        group.MapGetGroupsEndpoint();
+        group.MapGetGroupByIdEndpoint();
+        group.MapCreateGroupEndpoint();
+        group.MapUpdateGroupEndpoint();
+        group.MapDeleteGroupEndpoint();
+        group.MapGetGroupMembersEndpoint();
+        group.MapAddUsersToGroupEndpoint();
+        group.MapRemoveUserFromGroupEndpoint();
+
+        // user groups
+        group.MapGetUserGroupsEndpoint();
+
+        // impersonation
+        group.MapStartImpersonationEndpoint();
+        group.MapEndImpersonationEndpoint();
+        group.MapGetImpersonationGrantsEndpoint();
+        group.MapRevokeImpersonationGrantEndpoint();
+
+        // two-factor authentication (TOTP)
+        group.MapEnrollTwoFactorEndpoint();
+        group.MapVerifyEnrollTwoFactorEndpoint();
+        group.MapDisableTwoFactorEndpoint();
+    }
+}
