@@ -2,6 +2,7 @@ using Asp.Versioning;
 using MIT.Framework.Persistence;
 using MIT.Framework.Web.Modules;
 using MIT.Modules.Machines.Data;
+using MIT.Modules.Machines.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -24,9 +25,16 @@ public sealed class MachinesModule : IModule
             .AddDbContextCheck<MachinesDbContext>(
                 name: "db:machines",
                 failureStatus: HealthStatus.Unhealthy);
+
+        builder.Services.Configure<AgentKeyOptions>(
+            builder.Configuration.GetSection(AgentKeyOptions.Section));
+        builder.Services.AddScoped<IAgentApiKeyService, AgentApiKeyService>();
     }
 
-    public void ConfigureMiddleware(IApplicationBuilder app) { }
+    public void ConfigureMiddleware(IApplicationBuilder app)
+    {
+        app.UseMiddleware<AgentAuthMiddleware>();
+    }
 
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {

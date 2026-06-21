@@ -24,6 +24,7 @@ public sealed class MachinesDbContext : BaseDbContext
     public DbSet<MachineGroup> MachineGroups => Set<MachineGroup>();
     public DbSet<MachineCommand> MachineCommands => Set<MachineCommand>();
     public DbSet<PatchStatus> PatchStatuses => Set<PatchStatus>();
+    public DbSet<SystemSnapshot> SystemSnapshots => Set<SystemSnapshot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
