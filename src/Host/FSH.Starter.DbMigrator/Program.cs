@@ -15,6 +15,7 @@ using MIT.Modules.Multitenancy.Contracts.v1.GetTenantStatus;
 using MIT.Modules.Multitenancy.Data;
 using MIT.Modules.Multitenancy.Features.v1.GetTenantStatus;
 using MIT.Modules.Tickets;
+using MIT.Modules.Machines;
 using MIT.Modules.Webhooks;
 using MIT.Starter.DbMigrator;
 using MIT.Starter.DbMigrator.DemoSeed;
@@ -101,6 +102,8 @@ builder.Services.AddMediator(o =>
         typeof(MIT.Modules.Chat.ChatModule),
         typeof(MIT.Modules.Notifications.Contracts.v1.Commands.MarkNotificationReadCommand),
         typeof(MIT.Modules.Notifications.NotificationsModule),
+        typeof(MIT.Modules.Machines.Contracts.MachinesContractsMarker),
+        typeof(MIT.Modules.Machines.MachinesModule),
     ];
 });
 
@@ -116,6 +119,7 @@ var moduleAssemblies = new Assembly[]
     typeof(TicketsModule).Assembly,
     typeof(MIT.Modules.Chat.ChatModule).Assembly,
     typeof(MIT.Modules.Notifications.NotificationsModule).Assembly,
+    typeof(MachinesModule).Assembly,
 };
 
 // Disable runtime-only concerns; persistence + multitenancy stay on so DbInitializers resolve. Caching

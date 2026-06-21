@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>MIT.Modules.Machines.Contracts</RootNamespace>
+		<AssemblyName>MIT.Modules.Machines.Contracts</AssemblyName>
+		<NoWarn>$(NoWarn);S2094</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Mediator.Abstractions" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\BuildingBlocks\Shared\Shared.csproj" />
+	</ItemGroup>
+
+</Project>

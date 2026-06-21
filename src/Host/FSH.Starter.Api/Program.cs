@@ -10,6 +10,7 @@ using MIT.Modules.Webhooks;
 using MIT.Modules.Billing;
 using MIT.Modules.Catalog;
 using MIT.Modules.Tickets;
+using MIT.Modules.Machines;
 using MIT.Modules.Multitenancy.Features.v1.GetTenantStatus;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -62,7 +63,9 @@ builder.Services.AddMediator(o =>
         typeof(MIT.Modules.Chat.Contracts.v1.Commands.CreateChannelCommand),
         typeof(MIT.Modules.Chat.ChatModule),
         typeof(MIT.Modules.Notifications.Contracts.v1.Commands.MarkNotificationReadCommand),
-        typeof(MIT.Modules.Notifications.NotificationsModule)];
+        typeof(MIT.Modules.Notifications.NotificationsModule),
+        typeof(MIT.Modules.Machines.Contracts.MachinesContractsMarker),
+        typeof(MIT.Modules.Machines.MachinesModule)];
 });
 
 var moduleAssemblies = new Assembly[]
@@ -77,6 +80,7 @@ var moduleAssemblies = new Assembly[]
     typeof(TicketsModule).Assembly,
     typeof(MIT.Modules.Chat.ChatModule).Assembly,
     typeof(MIT.Modules.Notifications.NotificationsModule).Assembly,
+    typeof(MIT.Modules.Machines.MachinesModule).Assembly,
 };
 
 builder.AddHeroPlatform(o =>
