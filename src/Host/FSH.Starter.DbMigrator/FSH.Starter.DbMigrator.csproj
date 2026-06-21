@@ -50,6 +50,8 @@
     <ProjectReference Include="..\MIT.Starter.Migrations.PostgreSQL\MIT.Starter.Migrations.PostgreSQL.csproj" />
     <ProjectReference Include="..\..\Modules\Machines\Modules.Machines\Modules.Machines.csproj" />
     <ProjectReference Include="..\..\Modules\Machines\Modules.Machines.Contracts\Modules.Machines.Contracts.csproj" />
+    <ProjectReference Include="..\..\Modules\Diagnostics\Modules.Diagnostics\Modules.Diagnostics.csproj" />
+    <ProjectReference Include="..\..\Modules\Diagnostics\Modules.Diagnostics.Contracts\Modules.Diagnostics.Contracts.csproj" />
   </ItemGroup>
 
   <!-- Share configuration with the API so connection strings + tenant options

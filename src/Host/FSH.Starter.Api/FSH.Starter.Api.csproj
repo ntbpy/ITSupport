@@ -46,6 +46,8 @@
     <ProjectReference Include="..\..\Modules\Chat\Modules.Chat.Contracts\Modules.Chat.Contracts.csproj" />
     <ProjectReference Include="..\..\Modules\Machines\Modules.Machines\Modules.Machines.csproj" />
     <ProjectReference Include="..\..\Modules\Machines\Modules.Machines.Contracts\Modules.Machines.Contracts.csproj" />
+    <ProjectReference Include="..\..\Modules\Diagnostics\Modules.Diagnostics\Modules.Diagnostics.csproj" />
+    <ProjectReference Include="..\..\Modules\Diagnostics\Modules.Diagnostics.Contracts\Modules.Diagnostics.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -65,7 +65,9 @@ builder.Services.AddMediator(o =>
         typeof(MIT.Modules.Notifications.Contracts.v1.Commands.MarkNotificationReadCommand),
         typeof(MIT.Modules.Notifications.NotificationsModule),
         typeof(MIT.Modules.Machines.Contracts.MachinesContractsMarker),
-        typeof(MIT.Modules.Machines.MachinesModule)];
+        typeof(MIT.Modules.Machines.MachinesModule),
+        typeof(MIT.Modules.Diagnostics.Contracts.DiagnosticsContractsMarker),
+        typeof(MIT.Modules.Diagnostics.DiagnosticsModule)];
 });
 
 var moduleAssemblies = new Assembly[]
@@ -81,6 +83,7 @@ var moduleAssemblies = new Assembly[]
     typeof(MIT.Modules.Chat.ChatModule).Assembly,
     typeof(MIT.Modules.Notifications.NotificationsModule).Assembly,
     typeof(MIT.Modules.Machines.MachinesModule).Assembly,
+    typeof(MIT.Modules.Diagnostics.DiagnosticsModule).Assembly,
 };
 
 builder.AddHeroPlatform(o =>
