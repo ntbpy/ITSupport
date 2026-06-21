@@ -106,6 +106,8 @@ builder.Services.AddMediator(o =>
         typeof(MIT.Modules.Machines.MachinesModule),
         typeof(MIT.Modules.Diagnostics.Contracts.DiagnosticsContractsMarker),
         typeof(MIT.Modules.Diagnostics.DiagnosticsModule),
+        typeof(MIT.Modules.Alerts.Contracts.AlertsContractsMarker),
+        typeof(MIT.Modules.Alerts.AlertsModule),
     ];
 });
 
@@ -123,6 +125,7 @@ var moduleAssemblies = new Assembly[]
     typeof(MIT.Modules.Notifications.NotificationsModule).Assembly,
     typeof(MachinesModule).Assembly,
     typeof(MIT.Modules.Diagnostics.DiagnosticsModule).Assembly,
+    typeof(MIT.Modules.Alerts.AlertsModule).Assembly,
 };
 
 // Disable runtime-only concerns; persistence + multitenancy stay on so DbInitializers resolve. Caching

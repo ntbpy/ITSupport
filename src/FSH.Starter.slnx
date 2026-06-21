@@ -45,6 +45,10 @@
     <Project Path="Modules/Diagnostics/Modules.Diagnostics.Contracts/Modules.Diagnostics.Contracts.csproj" />
     <Project Path="Modules/Diagnostics/Modules.Diagnostics/Modules.Diagnostics.csproj" />
   </Folder>
+  <Folder Name="/Modules/Alerts/">
+    <Project Path="Modules/Alerts/Modules.Alerts.Contracts/Modules.Alerts.Contracts.csproj" />
+    <Project Path="Modules/Alerts/Modules.Alerts/Modules.Alerts.csproj" />
+  </Folder>
   <Folder Name="/Modules/Multitenancy/">
     <Project Path="Modules/Multitenancy/Modules.Multitenancy.Contracts/Modules.Multitenancy.Contracts.csproj" Id="61165a24-94b0-402c-9d9f-345898ce79c4" />
     <Project Path="Modules/Multitenancy/Modules.Multitenancy/Modules.Multitenancy.csproj" Id="69bca64d-0cf5-4236-8da6-1d775aa2a1cc" />
@@ -90,6 +94,7 @@
     <Project Path="Tests/Multitenancy.Tests/Multitenancy.Tests.csproj" Id="985345a2-edb4-4ef9-9a1b-59b704f523b6" />
     <Project Path="Tests/Machines.Tests/Machines.Tests.csproj" />
     <Project Path="Tests/Diagnostics.Tests/Diagnostics.Tests.csproj" />
+    <Project Path="Tests/Alerts.Tests/Alerts.Tests.csproj" />
   </Folder>
   <!--#if (includeTools) -->
   <Folder Name="/Tools/">

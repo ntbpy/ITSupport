@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>MIT.Modules.Alerts</RootNamespace>
+		<AssemblyName>MIT.Modules.Alerts</AssemblyName>
+		<NoWarn>$(NoWarn);CA1031;CA1812;CA1859;S3267</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Mediator.Abstractions" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\BuildingBlocks\Persistence\Persistence.csproj" />
+		<ProjectReference Include="..\..\..\BuildingBlocks\Web\Web.csproj" />
+		<ProjectReference Include="..\Modules.Alerts.Contracts\Modules.Alerts.Contracts.csproj" />
+		<ProjectReference Include="..\..\Machines\Modules.Machines.Contracts\Modules.Machines.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>

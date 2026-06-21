@@ -48,6 +48,8 @@
     <ProjectReference Include="..\..\Modules\Machines\Modules.Machines.Contracts\Modules.Machines.Contracts.csproj" />
     <ProjectReference Include="..\..\Modules\Diagnostics\Modules.Diagnostics\Modules.Diagnostics.csproj" />
     <ProjectReference Include="..\..\Modules\Diagnostics\Modules.Diagnostics.Contracts\Modules.Diagnostics.Contracts.csproj" />
+    <ProjectReference Include="..\..\Modules\Alerts\Modules.Alerts\Modules.Alerts.csproj" />
+    <ProjectReference Include="..\..\Modules\Alerts\Modules.Alerts.Contracts\Modules.Alerts.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
