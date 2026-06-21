@@ -99,6 +99,16 @@ builder.AddHeroPlatform(o =>
     o.EnableRealtime = true;
 });
 
+// Register real SignalR publishers before modules so TryAdd* in modules picks the NoOp only as fallback.
+builder.Services.AddSingleton<MIT.Modules.Diagnostics.Infrastructure.IDiagnosticPublisher,
+    MIT.Starter.Api.Hubs.Publishers.DiagnosticPublisher>();
+builder.Services.AddSingleton<MIT.Starter.Api.Hubs.Publishers.IMachineStatusPublisher,
+    MIT.Starter.Api.Hubs.Publishers.MachineStatusPublisher>();
+builder.Services.AddSingleton<MIT.Starter.Api.Hubs.Publishers.ICommandPublisher,
+    MIT.Starter.Api.Hubs.Publishers.CommandPublisher>();
+builder.Services.AddSingleton<MIT.Starter.Api.Hubs.Publishers.ITicketPublisher,
+    MIT.Starter.Api.Hubs.Publishers.TicketPublisher>();
+
 builder.AddModules(moduleAssemblies);
 
 // Self-heal deployments carrying retired per-module `{module}-outbox-dispatcher` Hangfire recurring jobs
@@ -119,6 +129,14 @@ app.UseHeroPlatform(p =>
     p.MapSseEndpoints = true;
     p.MapRealtime = true;
 });
+
+// VietRMM SignalR hubs
+app.MapHub<MIT.Starter.Api.Hubs.MachineStatusHub>("/hubs/machine-status");
+app.MapHub<MIT.Starter.Api.Hubs.DiagnosticHub>("/hubs/diagnostic");
+app.MapHub<MIT.Starter.Api.Hubs.CommandHub>("/hubs/command");
+app.MapHub<MIT.Starter.Api.Hubs.TicketHub>("/hubs/ticket");
+app.MapHub<MIT.Starter.Api.Hubs.RemoteSessionHub>("/hubs/remote-session");
+app.MapHub<MIT.Starter.Api.Hubs.BuildHub>("/hubs/build");
 
 app.MapGet("/", () => Results.Ok(new { message = "hello world!" }))
    .WithTags("PlayGround")

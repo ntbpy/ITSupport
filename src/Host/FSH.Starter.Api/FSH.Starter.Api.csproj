@@ -4,6 +4,7 @@
 		<RootNamespace>MIT.Starter.Api</RootNamespace>
 		<AssemblyName>MIT.Starter.Api</AssemblyName>
 		<IsPackable>false</IsPackable>
+		<NoWarn>$(NoWarn);CA1812</NoWarn>
 
 		<!-- Container configuration — image is built via `dotnet publish /t:PublishContainer`.
 		     No PublishProfile needed (the legacy "DefaultContainer" profile auto-populates
@@ -50,6 +51,8 @@
     <ProjectReference Include="..\..\Modules\Diagnostics\Modules.Diagnostics.Contracts\Modules.Diagnostics.Contracts.csproj" />
     <ProjectReference Include="..\..\Modules\Alerts\Modules.Alerts\Modules.Alerts.csproj" />
     <ProjectReference Include="..\..\Modules\Alerts\Modules.Alerts.Contracts\Modules.Alerts.Contracts.csproj" />
+    <ProjectReference Include="..\..\Modules\Notifications\Modules.Notifications\Modules.Notifications.csproj" />
+    <ProjectReference Include="..\..\Modules\Notifications\Modules.Notifications.Contracts\Modules.Notifications.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
